@@ -7,7 +7,7 @@ var scopeChaine = [];
 var typeChaine = [];
 
 var filename = process.argv[2];
-console.log("analyse :", filename);
+//console.log("analyse :", filename);
 var ast = esprima.parse(fs.readFileSync(filename));
 
 
