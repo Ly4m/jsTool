@@ -1,6 +1,7 @@
 var fs = require('fs');
 var esprima = require('esprima');
 var estraverse = require('estraverse');
+var escodegen = require('escodegen');
 
 var scopeChaine = [];
 var typeChaine = [];
@@ -9,11 +10,11 @@ var filename = process.argv[2];
 console.log("analyse :", filename);
 var ast = esprima.parse(fs.readFileSync(filename));
 
-/*
+
 console.log("================= A S T ======================");
 console.log(JSON.stringify(ast, null , 4));
 console.log("==============================================");
-*/
+
 
 estraverse.traverse(ast, {
 	enter: function(node){
@@ -42,7 +43,6 @@ estraverse.traverse(ast, {
 
 function ifFix(node){
 
-
 	if(node.type === 'IfStatement' && node.test.operator === "=="){
 		
 		var leftType = node.test.left.value;
@@ -62,11 +62,12 @@ function ifFix(node){
 		}
 
 		if(leftType == rightType){
-			
-			console.log("il faut changer", leftType, "==", rightType);
-		} else {
-			console.log("il ne faut pas changer", leftType, "==", rightType);
+			node.test.operator = "===";
+			var regenerated_code = escodegen.generate(ast);
+			console.log(regenerated_code);
 		}
+
+		
 	}
 }
 
@@ -93,27 +94,4 @@ function leave(node){
 		var currentScopeType = typeChaine.pop();
 		//printScope(currentScope, node);
 	}
-}
-
-function printScope(scope, node){
-	var varsDisplay = scope.join(', ');
-	if(node.type === 'Program'){
-		console.log('Variable définies dans le scope global :', varsDisplay);
-	} else {
-		if(node.id && node.id.name){
-			console.log('Variables declared in the function ' + node.id.name + '();', varsDisplay);
-		} else {
-			console.log('Variables declared in anonymous function:', varsDisplay);
-		}
-	}
-}
-
-function isVarDefined(varname, scopeChaine){
-	for(var i = 0; i < scopeChaine.length; i++){
-		var scope = scopeChaine[i];
-		if(scope.indexOf(varname) !== -1){
-			return true;
-		}
-	}
-	return false;
 }
