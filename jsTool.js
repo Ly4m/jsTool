@@ -8,12 +8,12 @@ var typeChaine = [];
 
 var filename = process.argv[2];
 //console.log("analyse :", filename);
-var ast = esprima.parse(fs.readFileSync(filename));
+var ast = esprima.parse(fs.readFileSync(filename), {loc: true});
 
 
-console.log("================= A S T ======================");
-console.log(JSON.stringify(ast, null , 4));
-console.log("==============================================");
+//console.log("================= A S T ======================");
+//console.log(JSON.stringify(ast, null , 4));
+//console.log("==============================================");
 
 
 estraverse.traverse(ast, {
@@ -62,9 +62,10 @@ function ifFix(node){
 		}
 
 		if(leftType == rightType){
-			node.test.operator = "===";
-			var regenerated_code = escodegen.generate(ast);
-			console.log(regenerated_code);
+			console.log(node.test.loc.end.line, node.test.left.loc.end.column, node.test.right.loc.start.column);
+			//node.test.operator = "===";
+			//var regenerated_code = escodegen.generate(ast);
+			//console.log(regenerated_code);
 		}
 
 		

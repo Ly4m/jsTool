@@ -6,7 +6,7 @@ function maFonction(){
 	var z = 1;
 
 	(function g(){
-		var d = "yo";
+		var d = 0;
 
 		if(d == z){
 			console.log("test KO");
